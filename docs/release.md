@@ -28,8 +28,8 @@ By default Docker images are built for Amd processors. With the rise of Arm proc
    docker buildx build \
    --platform linux/arm64,linux/amd64 \
    --build-arg node_version=$(<.nvmrc) \
-   --tag <registry>/<your_username>/app-node-js:1.0.0 \
-   --tag <registry>/<your_username>/app-node-js:latest \
+   --tag <registry>/<your_username>/myapp:1.0.0 \
+   --tag <registry>/<your_username>/myapp:latest \
    --label org.opencontainers.image.source=https://github.com/<your_username>/<repo_name> \
    --push \
    .

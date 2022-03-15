@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-node-js
+  name: myapp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app-node-js
+      app: myapp
   template:
     metadata:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "3000"
       labels:
-        app: app-node-js
+        app: myapp
     spec:
       containers:
-        - name: app-node-js
-          image: app-node-js
+        - name: myapp
+          image: myapp
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

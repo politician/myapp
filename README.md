@@ -15,15 +15,6 @@ Production-ready Node.js app.
 - Auto-publish signed images
 - Example deployments to Kubernetes, Heroku and Fly
 
-## Getting started
-
-1. Create your own repo [from this template](https://github.com/Olivr/app-node-js/generate) or [fork it](https://github.com/Olivr/app-node-js/fork)
-2. Clone your repo to your computer
-3. Search and replace `app-node-js` with your app name (this should update `package.json`, k8s manifests, docs)
-4. Search and replace `your app` with your app title (this should update docs)
-5. Remove this **Getting started** section
-6. Commit your changes!
-
 ## [Develop](docs/development.md)
 
 ## [Release](docs/release.md)

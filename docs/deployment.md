@@ -1,12 +1,12 @@
-# Deploy your app
+# Deploy my app
 
 ## Fly
 
 [Guide](https://fly.io/docs/hands-on/start/)
 
-1. Create your app in Fly if you haven't done so already `fly apps create`
-2. Deploy your app `fly deploy --config ./manifests/fly/fly.toml --image app-node-js --app <your-app-name>`
-3. View your app `fly open --app <your-app-name>`
+1. Create my app in Fly if you haven't done so already `fly apps create`
+2. Deploy my app `fly deploy --config ./manifests/fly/fly.toml --image myapp --app <your-app-name>`
+3. View my app `fly open --app <your-app-name>`
 
 > The given `fly.toml` is pre-configured with health checks on `/livez` and [Prometheus metrics](https://fly.io/docs/reference/metrics/#prerequisite).
 
@@ -16,10 +16,10 @@
 
 1. Login to Heroku `heroku auth:login`
 2. Login to Heroku's internal container registry `heroku container:login`
-3. Create your app in Heroku if you haven't done so already `heroku create`
+3. Create my app in Heroku if you haven't done so already `heroku create`
 4. Build and push your Docker image `heroku container:push web`
-5. Release your app `heroku container:release web`
-6. View your app `heroku open`
+5. Release my app `heroku container:release web`
+6. View my app `heroku open`
 
 > Note this will create another build of your image locally (though using cache)
 
@@ -35,8 +35,8 @@
      resources:
        - ../../manifests/k8s
      images:
-       - name: app-node-js
-         newName: <registry>/<your_username>/app-node-js
+       - name: myapp
+         newName: <registry>/<your_username>/myapp
          newTag: v1
      ```
 

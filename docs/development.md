@@ -1,6 +1,6 @@
 # Local development
 
-You can work on your app in three ways:
+You can work on my app in three ways:
 
 - Using your local Node.js installation
 - In a container running in Docker
@@ -31,11 +31,11 @@ You should test various options until you find one that is suitable for your env
 
 You'll probably also want to install [Lens](https://k8slens.dev/).
 
-## Run your app
+## Run my app
 
 1. Install dependencies with `nvm install && nvm use && yarn`
 
-2. Start your app:
+2. Start my app:
 
    - **Local**: `yarn dev`
    - **Docker**: `yarn docker:dev`
@@ -48,21 +48,21 @@ You'll probably also want to install [Lens](https://k8slens.dev/).
    - **Local/Docker**: in your terminal
    - **Kubernetes**: in your terminal by pressing `s` or press `space` to watch them in the [Tilt UI](http://localhost:10350)
 
-4. View your app on http://localhost:3000
+4. View my app on http://localhost:3000
 
 ## Live-reload
 
 1. Change something in your source code
 2. Watch your logs and see how quickly the server is restarted
-3. Refresh your browser and you should see the change in your app
+3. Refresh your browser and you should see the change in my app
 
 ## View traces in Jaeger
 
-Your app comes with several plugins for observability, refer to the [observability](observability.md) section for more details.
+my app comes with several plugins for observability, refer to the [observability](observability.md) section for more details.
 
 1. Start a local Jaeger instance: `yarn jaeger:init`
 2. Open the Jaeger UI: http://localhost:16686
-3. Make a request to [your app](http://localhost:3000)
+3. Make a request to [my app](http://localhost:3000)
 4. Note the `trace_id` in the logs and search for it in the Jaeger UI
 
 ### Running in Kubernetes
@@ -70,7 +70,7 @@ Your app comes with several plugins for observability, refer to the [observabili
 Depending on your chosen local cluster solution, it may or may not be able to access the above created Jaeger instance. If not, follow these steps to run a Jaeger instance in k8s:
 
 1. In `manifests/k8s/deployment.yaml`, set the value of `OTEL_EXPORTER_JAEGER_ENDPOINT` environment variable to `http://jaeger:14268/api/traces`
-2. When starting your app, make use of the _infra_tiltfile_ flag.
+2. When starting my app, make use of the _infra_tiltfile_ flag.
    (eg. `yarn k8s:dev --infra_tiltfile ./hack/example-infra/k8s/Tiltfile`)
 3. This configures access to Jaeger UI on http://localhost:16687 so the port doesn't clash with the other Jaeger instance running for local/docker development.
 
@@ -99,7 +99,7 @@ The [distroless debug image](https://github.com/GoogleContainerTools/distroless#
    - **Docker/k8s** (dev): Attach to Node.js
    - **Docker/k8s** (debug): Attach to Node.js
 4. Click on _Start debugging_ (F5)
-5. Refresh your app in your browser
+5. Refresh my app in your browser
 6. You can see the app stopping at the breakpoint
 7. Continue debugging in VS Code
 
