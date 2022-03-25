@@ -25,7 +25,14 @@ jobs:
         id: node_version
         run: echo "::set-output name=version::$(<.nvmrc)"
 
-      - name: Extract metadata from GitHub Action context
+      - name: Extract metadata from GitHub Action context for debug image
+        id: meta-debug
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/${{ github.repository }}-debug
+          tags: type=semver,pattern={{version}}
+
+      - name: Extract metadata from GitHub Action context for prod image
         id: meta
         uses: docker/metadata-action@v3
         with:
@@ -59,7 +66,18 @@ jobs:
       #   env:
       #     NODE_VERSION: ${{ steps.node_version.outputs.version }}
 
-      - name: Build and push
+      - name: Build and push debug image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta-debug.outputs.tags }}
+          labels: ${{ steps.meta-debug.outputs.labels }}
+          build-args: node_version=${{ steps.node_version.outputs.version }}
+          target: debug
+
+      - name: Build and push prod image
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -77,4 +95,4 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: 1
           FORCE: ${{ github.event.repository.private }}
-          TAGS: ${{ steps.meta.outputs.tags }}
+          TAGS: ${{ join(steps.meta-debug.outputs.tags, steps.meta.outputs.tags) }}
