@@ -1,54 +1,71 @@
+const { createTerminus } = require("@godaddy/terminus");
 const { logger } = require("./logger");
+const tracer = require("./tracer");
 
-// https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes
-
-// In k8s, not ready = stop sending traffic to container
 function readinessCheck({ state }) {
-  // `state.isShuttingDown` (boolean) shows whether the server is shutting down or not
-  return Promise
-    .resolve
-    // optionally include a resolve value to be included as
-    // info in the health check response
-    ();
+  logger.debug(`Readiness request received`);
+  const errors = [];
+  return Promise.all(
+    [
+      /*
+       * All your health checks go here
+       * Test db connections, 3rd party integrations, etc.
+       */
+    ].map((p) =>
+      p.catch((error) => {
+        errors.push(error);
+        return undefined;
+      })
+    )
+  ).then(() => {
+    if (errors.length) {
+      throw new HealthCheckError("Not ready", errors);
+    }
+  });
 }
 
-// In k8s, not live = restart container
-function livenessCheck({ state }) {
-  // `state.isShuttingDown` (boolean) shows whether the server is shutting down or not
-  return Promise
-    .resolve
-    // optionally include a resolve value to be included as
-    // info in the health check response
-    ();
-}
-
+// Clean up before closing the HTTP server
+// The server should not be receiving traffic at this stage (see SHUTDOWN_DELAY)
 function onSignal() {
   logger.debug(`HTTP server is starting to clean up`);
   return Promise.all([
-    // your clean logic, like closing database connections
+    /*
+     * All your graceful DB connections closing, de-registering, etc. go here
+     */
+    tracer.shutdown().then(
+      () => console.log("OpenTelemetry SDK shut down successfully"),
+      (err) => console.log("Error shutting down SDK", err)
+    ),
   ]);
 }
 
+// Most likely, you don't need to change the below
 const healthOptions = {
+  logger: (msg, err) => logger.error(err),
   healthChecks: {
-    "/readyz": readinessCheck,
-    "/livez": livenessCheck,
     verbatim: true,
+    "/readyz": readinessCheck, // In k8s, not ready = k8s stops sending traffic to container
+    "/livez": ({ state }) => {
+      // In k8s, not live = k8s restarts container
+      logger.debug(`Liveness request received`);
+      return Promise.resolve();
+    },
   },
 
-  onSignal,
   beforeShutdown: () => {
-    logger.info(`SIGTERM signal received: closing HTTP server in 11s`);
+    // https://github.com/godaddy/terminus#how-to-set-terminus-up-with-kubernetes
+    const timeout = process.env.SHUTDOWN_DELAY || 11;
+    logger.info(`SIGTERM signal received: Closing HTTP server in ${timeout}s`);
     return new Promise((resolve) => {
-      setTimeout(resolve, 11000); // One more second than readiness interval check
+      setTimeout(resolve, timeout * 1000);
     });
   },
-
+  onSignal,
   onShutdown: () => {
     logger.info(`HTTP server closed`);
   },
-
-  logger: (msg, err) => logger.error(err), // [optional] logger function to be called with errors. Example logger call: ('error happened during shutdown', error). See terminus.js for more details.
 };
 
-module.exports = healthOptions;
+module.exports = function healthChecker(server) {
+  return createTerminus(server, healthOptions);
+};

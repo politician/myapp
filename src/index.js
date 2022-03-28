@@ -1,9 +1,8 @@
 // Observability
-require("./observability/tracer");
-const { expressLogger, logger } = require("./observability/logger");
-const expressMeter = require("./observability/meter");
-const healthOptions = require("./observability/health");
-const { createTerminus } = require("@godaddy/terminus");
+const tracer = require("./observability/tracer").start();
+const { expressLoggerMiddleware, logger } = require("./observability/logger");
+const expressMeterRouter = require("./observability/meter");
+const healthChecker = require("./observability/health");
 
 // Express server
 const http = require("http");
@@ -16,8 +15,8 @@ try {
   const app = express();
 
   app.use(createMiddleware({ app }));
-  app.use(expressLogger);
-  app.use(expressMeter);
+  app.use(expressLoggerMiddleware);
+  app.use(expressMeterRouter);
 
   app.get("/", (req, res) => {
     req.log.info("Visited homepage");
@@ -27,8 +26,8 @@ try {
   app.use(notFoundHandler);
   app.use(errorHandler);
 
-  const server = http.createServer(app);
-  createTerminus(server, healthOptions);
+  // Create express server
+  const server = healthChecker(http.createServer(app));
 
   server.listen(port, () => {
     logger.info(`App listening on port ${port}!`);

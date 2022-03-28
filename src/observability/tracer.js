@@ -22,4 +22,4 @@ const sdk = new opentelemetry.NodeSDK({
   traceExporter: new JaegerExporter(),
 });
 
-sdk.start();
+module.exports = sdk;

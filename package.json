@@ -10,28 +10,30 @@
     "node": "16"
   },
   "dependencies": {
-    "@godaddy/terminus": "^4.9.0",
-    "@opentelemetry/api": "^1.0.3",
-    "@opentelemetry/exporter-jaeger": "^1.0.0",
-    "@opentelemetry/instrumentation-express": "^0.26.0",
-    "@opentelemetry/instrumentation-http": "^0.26.0",
-    "@opentelemetry/instrumentation-pino": "^0.26.0",
-    "@opentelemetry/resources": "^1.0.0",
-    "@opentelemetry/sdk-node": "^0.26.0",
-    "@opentelemetry/sdk-trace-base": "^1.0.0",
-    "@promster/express": "^7.0.0",
-    "express": "^4.17.1",
-    "pino-http": "^5.8.0 <6",
+    "@godaddy/terminus": "^4.10.2",
+    "@opentelemetry/api": "^1.1.0",
+    "@opentelemetry/exporter-jaeger": "^1.1.1",
+    "@opentelemetry/instrumentation-express": "^0.28.0",
+    "@opentelemetry/instrumentation-http": "^0.27.0",
+    "@opentelemetry/instrumentation-pino": "^0.28.1",
+    "@opentelemetry/resources": "^1.1.1",
+    "@opentelemetry/sdk-node": "^0.27.0",
+    "@opentelemetry/sdk-trace-base": "^1.1.1",
+    "@promster/express": "^7.0.5",
+    "express": "^4.17.3",
+    "pino": "^7.9.2",
+    "pino-http": "^6.6.0",
     "prom-client": "^14.0.1"
   },
   "author": "Romain Barissat",
   "license": "Apache-2.0",
   "devDependencies": {
-    "nodemon": "^2.0.14",
-    "pino-pretty": "^7.2.0"
+    "nodemon": "^2.0.15",
+    "pino-pretty": "^7.6.0"
   },
   "scripts": {
-    "dev": "yarn docker:stop; OTEL_EXPORTER_JAEGER_ENDPOINT=http://localhost:14268/api/traces yarn nodemon --inspect src/index.js | yarn pino-pretty -c -t",
+    "dev": "yarn docker:stop; OTEL_EXPORTER_JAEGER_ENDPOINT=http://localhost:14268/api/traces yarn nodemon --inspect src/index.js | yarn pino-pretty -c -t -x fatal:21,error:17,warn:13,info:9,debug:5,trace:1",
+    "dev:raw": "yarn docker:stop; OTEL_EXPORTER_JAEGER_ENDPOINT=http://localhost:14268/api/traces yarn nodemon --inspect src/index.js",
     "docker:cleanup": "echo '=> Deleting existing container...'; (docker rm $(docker ps -a -q --filter ancestor=myapp)) &>/dev/null || echo '=> No container to delete.'",
     "docker:debug": "yarn docker:stop; yarn docker:debug:build && yarn docker:debug:start && yarn docker:logs",
     "docker:debug:build": "docker build --target debug --build-arg node_version=$npm_package_engines_node -t myapp .",
@@ -50,5 +52,8 @@
     "k8s:debug": "yarn docker:stop; tilt up -- --app_name $npm_package_name --node_version $npm_package_engines_node --stage debug",
     "k8s:dev": "yarn docker:stop; tilt up -- --app_name $npm_package_name --node_version $npm_package_engines_node",
     "k8s:prod": "yarn docker:stop; tilt up -- --app_name $npm_package_name --node_version $npm_package_engines_node --stage prod"
+  },
+  "volta": {
+    "node": "16.14.2"
   }
 }
